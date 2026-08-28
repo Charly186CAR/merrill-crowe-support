@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0f2f4a" />
+<title>Merrill Crowe Support v0.1</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --bg:#f4f6f8; --card:#ffffff; --ink:#16212b; --muted:#607080;
+  --accent:#0f2f4a; --accent2:#1f5d8a; --warn:#a76800; --danger:#9e2a2b;
+  --ok:#2f6b3c; --line:#d9e1e7;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--accent);color:white;padding:18px 16px 14px;position:sticky;top:0;z-index:10}
+header h1{margin:0;font-size:20px}
+header p{margin:4px 0 0;font-size:12px;opacity:.85}
+main{max-width:920px;margin:auto;padding:16px 16px 90px}
+.notice{background:#fff7e6;border:1px solid #f0c36d;border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;line-height:1.35}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 2px 7px rgba(0,0,0,.04)}
+.card h2{margin:0 0 8px;font-size:17px}
+.card p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
+.btn{display:block;width:100%;margin-top:12px;border:0;border-radius:10px;padding:11px 12px;background:var(--accent2);color:white;font-weight:bold;cursor:pointer}
+.btn.secondary{background:#e8eef3;color:var(--accent)}
+.section{display:none}
+.section.active{display:block}
+.back{margin-bottom:12px;background:none;border:0;color:var(--accent2);font-weight:bold;cursor:pointer;padding:0}
+label{display:block;font-size:12px;font-weight:bold;margin:12px 0 5px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #bfcbd4;border-radius:8px;background:white;font-size:14px}
+textarea{min-height:90px;resize:vertical}
+.result{margin-top:14px;padding:12px;border-radius:10px;background:#eef5fa;border:1px solid #c8dbe8}
+.kpi{font-size:24px;font-weight:bold;color:var(--accent)}
+.small{font-size:12px;color:var(--muted)}
+.tag{display:inline-block;padding:4px 7px;border-radius:999px;background:#e9eff4;font-size:11px;margin:2px 3px 2px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border-bottom:1px solid var(--line);padding:9px 7px;text-align:left;vertical-align:top}
+th{background:#eef2f5}
+.step{border-left:4px solid var(--accent2);padding:10px 12px;margin:10px 0;background:white;border-radius:6px}
+footer{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--line);padding:8px 10px;text-align:center;font-size:11px;color:var(--muted)}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Merrill Crowe Support v0.1</h1>
+  <p>Herramienta piloto de soporte operativo y formación técnica</p><p id="operatorStatus" style="margin-top:7px;font-weight:bold"></p>
+</header>
+
+<main>
+<section id="login" class="section active">
+  <div class="card">
+    <h2>Identificación del operador</h2>
+    <p>Ingresá tus datos para acceder a Merrill Crowe Support. La identificación permitirá registrar la participación durante la prueba piloto.</p>
+    <div class="notice" style="margin:12px 0"><b>Uso de datos:</b> Los datos ingresados se utilizarán exclusivamente para evaluar participación y utilización durante la prueba piloto de Merrill Crowe Support.</div>
+
+    <label>Nombre</label>
+    <input id="opNombre" type="text" autocomplete="given-name" placeholder="Ej.: Juan">
+
+    <label>Apellido</label>
+    <input id="opApellido" type="text" autocomplete="family-name" placeholder="Ej.: Pérez">
+
+    <label>Legajo</label>
+    <input id="opLegajo" type="text" inputmode="numeric" placeholder="Ej.: 12345">
+
+    <button class="btn" onclick="operatorLogin()">Ingresar a la aplicación</button>
+    <div id="loginMsg" class="small" style="margin-top:10px"></div>
+  </div>
+</section>
+<section id="home" class="section">
+  <div class="card" style="margin-bottom:12px">
+    <h2>👤 Operador activo</h2>
+    <p id="operatorCard">Sin identificación</p>
+    <button class="btn secondary" onclick="changeOperator()">Cambiar operador</button>
+  </div>
+  <div class="notice"><b>Versión piloto.</b> Esta herramienta es un soporte de consulta. No reemplaza procedimientos, estándares, permisos de trabajo, instrucciones de Sala de Control ni indicaciones de Supervisión.</div>
+  <div class="grid">
+    <div class="card">
+      <h2>🧮 Calculadoras</h2>
+      <p>Acceso a cálculos utilizados habitualmente en Merrill Crowe.</p>
+      <button class="btn" onclick="show('calc')">Abrir</button>
+    </div>
+    <div class="card">
+      <h2>📊 Variables críticas</h2>
+      <p>Consulta rápida de variables, objetivo, impacto y puntos de verificación.</p>
+      <button class="btn" onclick="show('vars')">Abrir</button>
+    </div>
+    <div class="card">
+      <h2>🛠 Solución de problemas</h2>
+      <p>Árbol de diagnóstico inicial para desvíos frecuentes del proceso.</p>
+      <button class="btn" onclick="show('trouble')">Abrir</button>
+    </div>
+    <div class="card">
+      <h2>📘 Ayuda rápida</h2>
+      <p>Recordatorios de proceso, secuencia general y criterios de consulta.</p>
+      <button class="btn" onclick="show('help')">Abrir</button>
+    </div>
+    <div class="card">
+      <h2>📝 Feedback piloto</h2>
+      <p>Registro simple de utilidad, dificultades y propuestas de mejora.</p>
+      <button class="btn" onclick="show('feedback')">Abrir</button>
+    </div>
+    <div class="card">
+      <h2>ℹ️ Acerca de</h2>
+      <p>Alcance, versión, objetivo del piloto y criterios de uso.</p>
+      <button class="btn" onclick="show('about')">Abrir</button>
+    </div>
+  </div>
+</section>
+
+<section id="calc" class="section">
+  <button class="back" onclick="show('home')">← Volver</button>
+
+  <div class="card">
+    <h2>Calculadora de Factor de Zinc</h2>
+    <p>Calcula la relación entre la dosificación horaria de zinc metálico y la Ley Equivalente de metales preciosos presentes en la solución.</p>
+
+    <label>Dosificación de zinc (g/min)</label>
+    <input id="zn" type="number" step="any" placeholder="Ej.: 315">
+
+    <label>Ley Equivalente (g/t)</label>
+    <input id="leyEq" type="number" step="any" placeholder="Ej.: 12">
+
+    <button class="btn" onclick="calcZn()">Calcular Factor de Zinc</button>
+
+    <div id="znresult" class="result">
+      <div class="small">Resultado</div>
+      <div class="kpi">—</div>
+      <p class="small">Ingresá la dosificación de zinc y la Ley Equivalente.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <h2>¿Qué es el Factor de Zinc?</h2>
+    <p>El Factor de Zinc es un parámetro operativo que indica la cantidad de zinc metálico dosificado por hora en relación con la Ley Equivalente de metales preciosos (oro + plata) presentes en la solución. Es un indicador clave en el proceso de precipitación Merrill-Crowe.</p>
+
+    <h2 style="margin-top:18px">Fórmula</h2>
+    <div class="result">
+      <b>Factor de Zinc = (g de zinc/min × 60) ÷ Ley Equivalente</b>
+    </div>
+
+    <p class="small" style="margin-top:10px">
+      <b>g de zinc/min:</b> dosificación real del alimentador.<br>
+      <b>60:</b> conversión de minutos a horas.<br>
+      <b>Ley Equivalente:</b> suma de la ley de oro y la ley de plata.
+    </p>
+
+    <div class="result">
+      <b>Ley Equivalente = Ley de Au + Ley de Ag</b>
+    </div>
+
+    <h2 style="margin-top:18px">Ejemplo práctico</h2>
+    <p>
+      Dosificación de zinc: <b>315 g/min</b><br>
+      Ley de oro: <b>1,1 g/t</b><br>
+      Ley de plata: <b>10,9 g/t</b><br>
+      Ley Equivalente: <b>12 g/t</b><br><br>
+      Zinc por hora = 315 × 60 = <b>18.900 g/h</b><br>
+      Factor de Zinc = 18.900 ÷ 12 = <b>1.575</b>
+    </p>
+
+    <h2 style="margin-top:18px">Importancia del Factor de Zinc</h2>
+    <p>
+      • Favorece la correcta precipitación del oro y la plata.<br>
+      • Permite optimizar el consumo de zinc.<br>
+      • Ayuda a reducir pérdidas metalúrgicas.<br>
+      • Contribuye a la estabilidad operativa del circuito.<br>
+      • Facilita la detección de desvíos de proceso.
+    </p>
+
+    <h2 style="margin-top:18px">Recomendaciones operativas</h2>
+    <p>
+      • Ajustar la dosificación de zinc de acuerdo con la Ley Equivalente y los criterios operativos vigentes.<br>
+      • Verificar alimentador de zinc, oxígeno disuelto, pH y concentración de cianuro ante desvíos.<br>
+      • Registrar y realizar seguimiento del Factor de Zinc por turno.<br>
+      • Ante resultados fuera de los rangos operativos establecidos, informar a Sala de Control / Supervisión y aplicar el procedimiento vigente.
+    </p>
+  </div>
+</section>
+
+<section id="vars" class="section">
+  <button class="back" onclick="show('home')">← Volver</button>
+  <div class="card">
+    <h2>Variables críticas del proceso</h2>
+    <p>Seleccioná una variable para abrir su ficha técnica, impacto, desvíos y puntos de verificación.</p>
+  </div>
+
+  <div class="grid" style="margin-top:12px">
+    <div class="card"><h2>💧 Sólidos / Turbidez</h2><p>Clarificación y calidad de solución hacia torre.</p><button class="btn" onclick="show('var_turbidez')">Abrir</button></div>
+    <div class="card"><h2>🫧 Oxígeno disuelto</h2><p>Condición posterior a torre desaereadora.</p><button class="btn" onclick="show('var_o2')">Abrir</button></div>
+    <div class="card"><h2>⬇️ Vacío de torre</h2><p>Condición necesaria para remover oxígeno.</p><button class="btn" onclick="show('var_vacio')">Abrir</button></div>
+    <div class="card"><h2>⚗️ pH / Alcalinidad</h2><p>Control químico y condición de seguridad.</p><button class="btn" onclick="show('var_ph')">Abrir</button></div>
+    <div class="card"><h2>📈 Presión diferencial</h2><p>Estado operativo de filtros clarificadores.</p><button class="btn" onclick="show('var_dp')">Abrir</button></div>
+    <div class="card"><h2>⚙️ Factor de Zinc</h2><p>Relación entre zinc dosificado y Ley Equivalente.</p><button class="btn" onclick="show('var_zinc')">Abrir</button></div>
+    <div class="card"><h2>🧪 Solución barren</h2><p>Resultado final de precipitación y filtración.</p><button class="btn" onclick="show('var_barren')">Abrir</button></div>
+  </div>
+</section>
+
+
+<section id="var_turbidez" class="section">
+  <button class="back" onclick="show('vars')">← Variables críticas</button>
+  <div class="card"><h2>💧 Sólidos suspendidos / Turbidez</h2>
+  <p><b>Objetivo:</b> entregar a la torre desaereadora una solución suficientemente limpia para favorecer la precipitación con zinc.</p>
+  <div class="result"><b>Referencia formativa:</b> preferentemente &lt; 1 mg/L de sólidos suspendidos antes de la torre.</div>
+  <h2 style="margin-top:16px">Qué verificar</h2>
+  <p>Clarificador, aspecto del rebalse, precapa, body feed, telas/hojas, presión diferencial, turbidez del filtrado y secuencia de lavado.</p>
+  <h2 style="margin-top:16px">Si aumenta</h2>
+  <p>Puede existir arrastre de sólidos, precapa insuficiente, body feed bajo, telas cegadas/rotas o lavado deficiente.</p>
+  <h2 style="margin-top:16px">Impacto</h2>
+  <p>Los sólidos finos pueden afectar la eficiencia del zinc, acortar ciclos de filtración y perjudicar la precipitación.</p></div>
+</section>
+
+<section id="var_o2" class="section">
+  <button class="back" onclick="show('vars')">← Variables críticas</button>
+  <div class="card"><h2>🫧 Oxígeno disuelto</h2>
+  <p><b>Objetivo:</b> mantener bajo el oxígeno después de la torre desaereadora.</p>
+  <div class="result"><b>Referencia del material:</b> un valor posterior a torre mayor a 0,5 ppm requiere análisis.</div>
+  <h2 style="margin-top:16px">Qué verificar</h2>
+  <p>Vacío, nivel de torre, bomba Nash, agua de sello, bridas, sellos, entradas de aire falso y condición de empaquetadura.</p>
+  <h2 style="margin-top:16px">Impacto</h2>
+  <p>El oxígeno oxida el zinc, reduce su eficiencia y puede elevar el consumo sin resolver el problema metalúrgico.</p></div>
+</section>
+
+<section id="var_vacio" class="section">
+  <button class="back" onclick="show('vars')">← Variables críticas</button>
+  <div class="card"><h2>⬇️ Vacío de torre desaereadora</h2>
+  <p><b>Objetivo:</b> sostener el vacío necesario para remover oxígeno disuelto antes de adicionar zinc.</p>
+  <h2 style="margin-top:16px">Qué verificar</h2>
+  <p>Vacío de operación, nivel de solución, O₂ disuelto, agua de sello de la bomba de vacío, sellos, bridas y líneas.</p>
+  <h2 style="margin-top:16px">Desvíos asociados</h2>
+  <p>Vacío bajo, O₂ alto, nivel inestable, ingreso de aire falso, falta de agua de sello o pérdida de capacidad de la bomba Nash.</p></div>
+</section>
+
+<section id="var_ph" class="section">
+  <button class="back" onclick="show('vars')">← Variables críticas</button>
+  <div class="card"><h2>⚗️ pH / Alcalinidad</h2>
+  <p><b>Objetivo:</b> mantener la solución cianurada en condición alcalina de acuerdo con los procedimientos vigentes.</p>
+  <h2 style="margin-top:16px">Si el pH baja</h2>
+  <p>Confirmar la medición, comunicar de inmediato, revisar dosificación de cal y cambios de alimentación, y aplicar el protocolo de seguridad correspondiente.</p>
+  <h2 style="margin-top:16px">Importancia</h2>
+  <p>El control de alcalinidad es parte del control de proceso y de la seguridad operacional con soluciones cianuradas.</p></div>
+</section>
+
+<section id="var_dp" class="section">
+  <button class="back" onclick="show('vars')">← Variables críticas</button>
+  <div class="card"><h2>📈 Presión diferencial</h2>
+  <p><b>Qué indica:</b> la resistencia al paso de solución a través del filtro clarificador.</p>
+  <h2 style="margin-top:16px">Si aumenta rápidamente</h2>
+  <p>Puede indicar acumulación de sólidos, torta poco permeable, precapa deficiente, body feed insuficiente o telas cegadas.</p>
+  <h2 style="margin-top:16px">Qué verificar</h2>
+  <p>Presión de alimentación, diferencial, turbidez, precapa, retorno limpio, body feed, ciclo y secuencia de lavado.</p></div>
+</section>
+
+<section id="var_zinc" class="section">
+  <button class="back" onclick="show('vars')">← Variables críticas</button>
+  <div class="card"><h2>⚙️ Dosificación / Factor de Zinc</h2>
+  <p><b>Objetivo:</b> dosificar zinc según análisis de solución, Ley Equivalente y criterio de Factor de Zinc.</p>
+  <h2 style="margin-top:16px">Criterio operativo</h2>
+  <p>Un barren alto no significa automáticamente falta de zinc. Antes de aumentar la dosificación se deben revisar O₂, vacío, turbidez, dosificación real, alimentador, cono, muestreo y filtros prensa.</p>
+  <p><b>Dosificación baja:</b> puede dejar Au/Ag en solución barren.</p>
+  <p><b>Dosificación excesiva:</b> aumenta consumo, zinc en torta y puede complicar etapas posteriores.</p>
+  <button class="btn" onclick="show('calc')">Abrir Calculadora de Factor de Zinc</button></div>
+</section>
+
+<section id="var_barren" class="section">
+  <button class="back" onclick="show('vars')">← Variables críticas</button>
+  <div class="card"><h2>🧪 Solución barren / estéril</h2>
+  <p><b>Función como indicador:</b> permite verificar la eficiencia final de precipitación y filtración.</p>
+  <h2 style="margin-top:16px">Ante valores altos</h2>
+  <p>Confirmar que la muestra sea representativa y revisar en conjunto zinc, O₂, turbidez, mezcla y condición del filtro prensa.</p>
+  <h2 style="margin-top:16px">Criterio</h2>
+  <p>No tomar decisiones importantes a partir de un único dato sin contrastarlo con tendencia y condición real del circuito.</p></div>
+</section>
+
+<section id="trouble" class="section">
+  <button class="back" onclick="show('home')">← Volver</button>
+  <div class="card">
+    <h2>Solución pobre alta</h2>
+    <p>Guía de diagnóstico inicial. Seleccioná el síntoma principal observado.</p>
+
+    <label>Condición observada</label>
+    <select id="symptom" onchange="diagnose()">
+      <option value="">Seleccionar...</option>
+      <option value="poor">Solución pobre por encima del objetivo</option>
+      <option value="vacuum">Vacío bajo / inestable</option>
+      <option value="turbidity">Turbidez / clarificación deficiente</option>
+      <option value="zinc">Problema de dosificación de zinc</option>
+    </select>
+
+    <div id="diag"></div>
+  </div>
+</section>
+
+<section id="help" class="section">
+  <button class="back" onclick="show('home')">← Volver</button>
+  <div class="card">
+    <h2>Ayuda rápida</h2>
+    <div class="step"><b>1. Confirmar el dato.</b><br>Verificar tendencia, condición de muestreo y consistencia del valor antes de intervenir.</div>
+    <div class="step"><b>2. Revisar variables relacionadas.</b><br>No analizar una sola variable de forma aislada. Correlacionar caudal, clarificación, vacío y zinc.</div>
+    <div class="step"><b>3. Comparar contra estándar.</b><br>Usar únicamente rangos y criterios vigentes y aprobados para el sitio.</div>
+    <div class="step"><b>4. Escalar cuando corresponda.</b><br>Ante desvíos fuera de autoridad operativa, informar a Sala de Control / Supervisión y seguir procedimiento.</div>
+  </div>
+</section>
+
+<section id="feedback" class="section">
+  <button class="back" onclick="show('home')">← Volver</button>
+  <div class="card">
+    <h2>Feedback del piloto</h2>
+    <label>¿La herramienta te resultó útil?</label>
+    <select id="useful"><option>Muy útil</option><option>Útil</option><option>Poco útil</option><option>No útil</option></select>
+
+    <label>¿Qué módulo utilizaste?</label>
+    <select id="module"><option>Calculadoras</option><option>Variables críticas</option><option>Solución de problemas</option><option>Ayuda rápida</option></select>
+
+    <label>Comentario / mejora propuesta</label>
+    <textarea id="comment" placeholder="Escribí una observación..."></textarea>
+
+    <button class="btn" onclick="saveFeedback()">Guardar en este dispositivo</button>
+    <div id="fbmsg" class="small" style="margin-top:8px"></div>
+  </div>
+</section>
+
+<section id="about" class="section">
+  <button class="back" onclick="show('home')">← Volver</button>
+  <div class="card">
+    <h2>Acerca de la herramienta</h2>
+    <p><b>Nombre:</b> Merrill Crowe Support</p>
+    <p><b>Versión:</b> v0.1 – Piloto 2026</p>
+    <p><b>Objetivo:</b> soporte de consulta, ayuda memoria, cálculos operativos y orientación inicial ante desvíos.</p>
+    <p><b>Alcance:</b> prueba piloto con operadores de Merrill Crowe.</p>
+    <p><b>Limitación:</b> no reemplaza documentación oficial ni autorización operacional.</p><p><b>Registro piloto:</b> la versión v0.5 identifica al operador mediante Nombre, Apellido y Legajo y registra localmente los módulos abiertos y cálculos realizados. Para consolidar reportes de varios teléfonos será necesaria una base central en la etapa de publicación.</p>
+  </div>
+</section>
+</main>
+
+<footer>Merrill Crowe Support v0.1 · Piloto 2026</footer>
+
+<script>
+function getOperator(){
+  try { return JSON.parse(localStorage.getItem('mc_operator') || 'null'); }
+  catch(e){ return null; }
+}
+function updateOperatorUI(){
+  const op=getOperator();
+  const text=op ? op.nombre+' '+op.apellido+' · Legajo '+op.legajo : '';
+  const st=document.getElementById('operatorStatus');
+  const card=document.getElementById('operatorCard');
+  if(st) st.textContent=text;
+  if(card) card.textContent=op ? text : 'Sin identificación';
+}
+function logActivity(action,module,detail=''){
+  const op=getOperator();
+  if(!op) return;
+  const arr=JSON.parse(localStorage.getItem('mc_activity')||'[]');
+  arr.push({
+    timestamp:new Date().toISOString(),
+    nombre:op.nombre,
+    apellido:op.apellido,
+    legajo:op.legajo,
+    action:action,
+    module:module,
+    detail:detail
+  });
+  localStorage.setItem('mc_activity',JSON.stringify(arr));
+}
+function operatorLogin(){
+  const nombre=document.getElementById('opNombre').value.trim();
+  const apellido=document.getElementById('opApellido').value.trim();
+  const legajo=document.getElementById('opLegajo').value.trim();
+  const msg=document.getElementById('loginMsg');
+  if(!nombre || !apellido || !legajo){
+    msg.textContent='Completá Nombre, Apellido y Legajo.';
+    return;
+  }
+  const op={nombre,apellido,legajo};
+  localStorage.setItem('mc_operator',JSON.stringify(op));
+  updateOperatorUI();
+  logActivity('inicio_sesion','Aplicación','Ingreso del operador');
+  show('home',false);
+}
+function changeOperator(){
+  localStorage.removeItem('mc_operator');
+  updateOperatorUI();
+  document.getElementById('opNombre').value='';
+  document.getElementById('opApellido').value='';
+  document.getElementById('opLegajo').value='';
+  show('login',false);
+}
+function show(id,track=true){
+  const op=getOperator();
+  if(id!=='login' && !op){
+    id='login';
+    track=false;
+  }
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(track && id!=='home') logActivity('abrir_modulo',id,'');
+  window.scrollTo(0,0);
+}
+function calcZn(){
+  const zn = parseFloat(document.getElementById('zn').value);
+  const leyEq = parseFloat(document.getElementById('leyEq').value);
+  const box = document.getElementById('znresult');
+
+  if (!Number.isFinite(zn) || !Number.isFinite(leyEq) || zn < 0 || leyEq <= 0) {
+    box.innerHTML =
+      '<div class="small">Resultado</div><div class="kpi">Datos inválidos</div>'+
+      '<p class="small">Ingresá una dosificación de zinc válida y una Ley Equivalente mayor que cero.</p>';
+    return;
+  }
+
+  const zincHora = zn * 60;
+  const factor = zincHora / leyEq;
+  logActivity('calculo','Factor de Zinc','Dosificación '+zn+' g/min; Ley equivalente '+leyEq+'; Factor '+factor.toFixed(2));
+
+  const fmt = new Intl.NumberFormat('es-AR', {maximumFractionDigits: 2});
+  box.innerHTML =
+    '<div class="small">Factor de Zinc</div>'+
+    '<div class="kpi">'+fmt.format(factor)+'</div>'+
+    '<p class="small">Zinc por hora: <b>'+fmt.format(zincHora)+' g/h</b><br>'+
+    'Cálculo: ('+fmt.format(zn)+' × 60) ÷ '+fmt.format(leyEq)+'</p>';
+}
+function diagnose(){
+  const v=document.getElementById('symptom').value;
+  const d=document.getElementById('diag');
+  let html='';
+  if(v==='poor'){
+    html = `
+      <div class="step"><b>1. Confirmar valor y tendencia</b><br>Revisar repetibilidad del dato y evolución temporal.</div>
+      <div class="step"><b>2. Verificar dosificación de zinc</b><br>Confirmar continuidad, consumo real y condición del sistema.</div>
+      <div class="step"><b>3. Revisar vacío</b><br>Evaluar estabilidad de la torre desaireadora y posibles ingresos de aire.</div>
+      <div class="step"><b>4. Revisar clarificación</b><br>Confirmar condición de filtros y presencia de sólidos/turbidez.</div>
+      <div class="step"><b>5. Correlacionar con caudal y carga metálica</b><br>Identificar cambios de proceso que puedan explicar el desvío.</div>
+      <div class="notice"><b>Si el desvío persiste:</b> escalar a Sala de Control / Supervisión y aplicar el procedimiento vigente.</div>`;
+  } else if(v==='vacuum'){
+    html = `
+      <div class="step"><b>Verificar:</b> tendencia de vacío, sellos, válvulas, ingreso de aire, condición hidráulica y estabilidad del caudal.</div>
+      <div class="notice">No realizar ajustes fuera de la autoridad operativa definida.</div>`;
+  } else if(v==='turbidity'){
+    html = `
+      <div class="step"><b>Verificar:</b> condición de filtros clarificadores, diferencial, secuencia, turbidez de entrada y salida y posibles arrastres.</div>`;
+  } else if(v==='zinc'){
+    html = `
+      <div class="step"><b>Verificar:</b> disponibilidad, preparación, continuidad de dosificación, consumo real, condición del sistema y correlación con solución pobre.</div>`;
+  }
+  d.innerHTML=html;
+}
+function saveFeedback(){
+  const op=getOperator();
+  const data={
+    nombre:op?op.nombre:'', apellido:op?op.apellido:'', legajo:op?op.legajo:'',
+    useful:document.getElementById('useful').value,
+    module:document.getElementById('module').value,
+    comment:document.getElementById('comment').value,
+    date:new Date().toISOString()
+  };
+  const arr=JSON.parse(localStorage.getItem('mc_feedback')||'[]');
+  arr.push(data);
+  localStorage.setItem('mc_feedback',JSON.stringify(arr));
+  document.getElementById('fbmsg').textContent='Feedback guardado localmente en este dispositivo.';
+}
+window.addEventListener('DOMContentLoaded',()=>{
+  updateOperatorUI();
+  if(getOperator()){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById('home').classList.add('active');
+  } else {
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById('login').classList.add('active');
+  }
+});
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>

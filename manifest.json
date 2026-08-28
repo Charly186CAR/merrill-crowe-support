@@ -1,0 +1,11 @@
+{
+  "name": "Merrill Crowe Support",
+  "short_name": "MC Support",
+  "description": "Herramienta piloto de soporte operativo y formación técnica para Merrill Crowe.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#123b63",
+  "lang": "es"
+}
