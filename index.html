@@ -480,6 +480,64 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-
+<!-- INICIO: REGISTRO CENTRAL MERRILL CROWE -->
+<script>
+(function(){
+  'use strict';
+  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyimBQ3vHZU02D5BgMJlTIklzotkIXpm1xhZkkWhaJjAyPdpvjXHNJQDEGNwRdrlKFuZw/exec';
+  const QUEUE_KEY = 'mc_pending_central_v1';
+  let sending = false;
+  const makeId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(36).slice(2));
+  function readQueue(){try{return JSON.parse(localStorage.getItem(QUEUE_KEY)||'[]')}catch(e){return []}}
+  function queueActivity(action,module,detail){
+    const op = getOperator();
+    if(!op) return;
+    const event={
+      id:makeId(), timestamp:new Date().toISOString(),
+      nombre:op.nombre,apellido:op.apellido,legajo:op.legajo,
+      action:action,module:module,detail:detail||''
+    };
+    const q=readQueue();q.push(event);
+    localStorage.setItem(QUEUE_KEY,JSON.stringify(q));
+    flushQueue();
+  }
+  async function flushQueue(){
+    if(sending || !navigator.onLine) return;
+    sending=true;
+    try {
+      while(navigator.onLine){
+        const next=readQueue()[0];
+        if(!next)break;
+        // Apps Script suele impedir leer la respuesta por CORS.
+        // Un fetch sin error NO prueba que Sheets haya grabado el registro.
+        await fetch(ENDPOINT,{
+          method:'POST',mode:'no-cors',
+          headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body:JSON.stringify(next)
+        });
+        const q=readQueue();
+        localStorage.setItem(QUEUE_KEY,JSON.stringify(q.filter(row=>row.id!==next.id)));
+      }
+    }catch(e){console.warn('Registro pendiente: conexión fallida',e)}
+    finally{sending=false}
+  }
+  const originalLogActivity=window.logActivity;
+  window.logActivity=function(action,module,detail){
+    originalLogActivity(action,module,detail);
+    queueActivity(action,module,detail);
+  };
+  const originalSaveFeedback=window.saveFeedback;
+  window.saveFeedback=function(){
+    originalSaveFeedback();
+    if(getOperator()) logActivity('feedback','Comentarios','Formulario completado');
+  };
+  window.addEventListener('online',flushQueue);
+  window.addEventListener('DOMContentLoaded',function(){
+    if(getOperator())logActivity('apertura_aplicacion','Aplicación','Acceso con sesión recordada');
+    flushQueue();
+  });
+})();
+</script>
+<!-- FIN: REGISTRO CENTRAL MERRILL CROWE -->
 </body>
 </html>
