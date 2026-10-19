@@ -539,5 +539,154 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 <!-- FIN: REGISTRO CENTRAL MERRILL CROWE -->
+<!-- FIN: biblioteca de procedimientos Merrill Crowe -->
+<!-- INICIO: biblioteca de procedimientos Merrill Crowe -->
+<script>
+(() => {
+  'use strict';
+  const procedimientos = [
+  {
+    "codigo": "CN-PRC-PRO-279",
+    "titulo": "Arranque de bomba de alimentación a filtros clarificadores",
+    "url": "procedimientos/CN-PRC-PRO-279.pdf",
+    "publicacion": "08/05/2024",
+    "pie_revision": "08/05/2025",
+    "paginas": 4
+  },
+  {
+    "codigo": "CN-PRC-PRO-280",
+    "titulo": "Arranque de bomba de rebalse del clarificador",
+    "url": "procedimientos/CN-PRC-PRO-280.pdf",
+    "publicacion": "08/05/2024",
+    "pie_revision": "08/05/2025",
+    "paginas": 3
+  },
+  {
+    "codigo": "CN-PRC-PRO-281",
+    "titulo": "Arranque de bomba de vacío",
+    "url": "procedimientos/CN-PRC-PRO-281.pdf",
+    "publicacion": "08/05/2024",
+    "pie_revision": "08/05/2025",
+    "paginas": 3
+  },
+  {
+    "codigo": "CN-PRC-PRO-282",
+    "titulo": "Arranque de bombas de alimentación a filtros prensa",
+    "url": "procedimientos/CN-PRC-PRO-282.pdf",
+    "publicacion": "09/05/2024",
+    "pie_revision": "09/05/2025",
+    "paginas": 4
+  },
+  {
+    "codigo": "CN-PRC-PRO-283",
+    "titulo": "Arranque del sistema de dosificación de zinc – monitoreo y operación",
+    "url": "procedimientos/CN-PRC-PRO-283.pdf",
+    "publicacion": "12/05/2024",
+    "pie_revision": "12/05/2025",
+    "paginas": 7
+  },
+  {
+    "codigo": "CN-PRC-PRO-284",
+    "titulo": "Arranque general del área de clarificación y precipitación",
+    "url": "procedimientos/CN-PRC-PRO-284.pdf",
+    "publicacion": "01/09/2025",
+    "pie_revision": "01/09/2028",
+    "paginas": 4
+  },
+  {
+    "codigo": "CN-PRC-PRO-285",
+    "titulo": "Detención del área Merrill Crowe",
+    "url": "procedimientos/CN-PRC-PRO-285.pdf",
+    "publicacion": "01/09/2025",
+    "pie_revision": "01/09/2028",
+    "paginas": 4
+  },
+  {
+    "codigo": "CN-PRC-PRO-286",
+    "titulo": "Detención de bomba de vacío",
+    "url": "procedimientos/CN-PRC-PRO-286.pdf",
+    "publicacion": "01/09/2025",
+    "pie_revision": "01/09/2028",
+    "paginas": 3
+  },
+  {
+    "codigo": "CN-PRC-PRO-287",
+    "titulo": "Detención de bomba de rebalse del clarificador",
+    "url": "procedimientos/CN-PRC-PRO-287.pdf",
+    "publicacion": "01/09/2025",
+    "pie_revision": "01/09/2028",
+    "paginas": 3
+  },
+  {
+    "codigo": "CN-PRC-PRO-288",
+    "titulo": "Preparación de ayuda filtrante (Body Feed)",
+    "url": "procedimientos/CN-PRC-PRO-288.pdf",
+    "publicacion": "01/09/2025",
+    "pie_revision": "01/09/2028",
+    "paginas": 3
+  },
+  {
+    "codigo": "CN-PRC-PRO-289",
+    "titulo": "Ingreso en operación de filtros clarificadores",
+    "url": "procedimientos/CN-PRC-PRO-289.pdf",
+    "publicacion": "01/09/2025",
+    "pie_revision": "01/09/2028",
+    "paginas": 4
+  },
+  {
+    "codigo": "CN-PRC-PRO-292",
+    "titulo": "Apertura de filtros clarificadores para inspección y lavado de telas",
+    "url": "procedimientos/CN-PRC-PRO-292.pdf",
+    "publicacion": "01/09/2025",
+    "pie_revision": "01/09/2028",
+    "paginas": 4
+  }
+];
+  function construirBiblioteca() {
+    const home = document.querySelector('#home .grid');
+    const main = document.querySelector('main');
+    if (!home || !main || document.getElementById('biblioteca-procedimientos')) return;
+    const tarjeta = document.createElement('div');
+    tarjeta.className = 'card';
+    tarjeta.innerHTML = '<h2>📄 Procedimientos Merrill Crowe</h2><p>Consulta de documentos PDF originales.</p><button class="btn" type="button">Abrir</button>';
+    tarjeta.querySelector('button').addEventListener('click', () => show('biblioteca-procedimientos'));
+    home.appendChild(tarjeta);
+    const seccion = document.createElement('section');
+    seccion.id = 'biblioteca-procedimientos';
+    seccion.className = 'section';
+    seccion.innerHTML = '<button class="back" type="button">← Volver</button><div class="card"><h2>📄 Procedimientos Merrill Crowe</h2><p>Documentos originales. Comprobar siempre su vigencia en el sistema documental oficial antes de utilizarlos para operar.</p><div id="biblioteca-listado"></div></div>';
+    seccion.querySelector('.back').addEventListener('click', () => show('home'));
+    main.appendChild(seccion);
+    const listado = seccion.querySelector('#biblioteca-listado');
+    procedimientos.forEach(p => {
+      const fila = document.createElement('div');
+      fila.style.cssText = 'border-bottom:1px solid #d5dde5;padding:14px 0;';
+      const nombre = document.createElement('div');
+      nombre.textContent = p.codigo + ' — ' + p.titulo;
+      nombre.style.fontWeight = 'bold';
+      const detalles = document.createElement('p');
+      detalles.className = 'small';
+      detalles.textContent = 'Publicado: ' + p.publicacion + ' · Fecha indicada como revisión: ' + p.pie_revision + ' · ' + p.paginas + ' páginas';
+      const enlace = document.createElement('a');
+      enlace.className = 'btn';
+      enlace.textContent = 'Ver PDF';
+      enlace.href = p.url;
+      enlace.target = '_blank';
+      enlace.rel = 'noopener noreferrer';
+      enlace.style.cssText = 'display:block;text-align:center;text-decoration:none;';
+      enlace.addEventListener('click', () => {
+        if (typeof window.logActivity === 'function')
+          window.logActivity('abrir_procedimiento', p.codigo, p.titulo);
+      });
+      fila.append(nombre,detalles,enlace);
+      listado.appendChild(fila);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',construirBiblioteca);
+  else construirBiblioteca();
+})();
+</script>
+<!-- FIN: biblioteca de procedimientos Merrill Crowe -->
+
 </body>
 </html>
