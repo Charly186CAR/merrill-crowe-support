@@ -16,3 +16,4 @@ Incluye:
 
 Nota:
 La centralización en Google Sheets se configurará en la siguiente etapa.
+Actualización de publicación GitHub Pages – octubre 2026
